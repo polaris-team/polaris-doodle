@@ -9,20 +9,24 @@ const playerObj = `
       _id
       name
     }
-`
+`;
+
+const lineupObject = `
+    _id
+    name
+    players {
+      ${playerObj}
+    }
+`;
 
 /* LINEUP */
 const GET_LINEUP = gql`
 query getLineUp($id: MongoID!) {
   lineupById(_id: $id) {
-    _id
-    name
-    players {
-${playerObj}
-    }
+${lineupObject}
   }
 }
-`
+`;
 
 /* PLAYER */
 
@@ -30,9 +34,12 @@ const LOGIN_PLAYER = gql`
 query {
   playerLogin {
 ${playerObj}
+    lineup {
+${lineupObject}
+    }
   }
 }
-`
+`;
 
 const UPDATE_PLAYER = gql`
 mutation modifyPlayer($record: UpdateByIdPlayerInput!) {
@@ -42,7 +49,7 @@ ${playerObj}
     }
   }
 }
-`
+`;
 
 /* DATA */
 
@@ -53,12 +60,12 @@ query getRoles {
     name
   }
 }
-`
+`;
 
 
-export { 
+export {
   GET_LINEUP,
   LOGIN_PLAYER,
   UPDATE_PLAYER,
   GET_ROLES,
-}
+};
