@@ -19,14 +19,14 @@ export default new Vuex.Store({
     token: null,
   },
   mutations: {
-    setActiveUser(state, { client, token, user }) {
+    setActiveUser(state, { client, token, user, lineup }) {
       state.client = client;
       state.token = token;
       state.user = {
         ...user,
-        lineup: user.lineup._id,
+        lineup: lineup._id,
       };
-      state.lineup = user.lineup;
+      state.lineup = lineup;
     },
     setLineup(state, lineup) {
       state.lineup = lineup;
@@ -49,7 +49,10 @@ export default new Vuex.Store({
       const response = await client.requester.query({
         query: LOGIN_PLAYER,
       });
-      commit('setActiveUser', { client, token, user: response.data.playerLogin });
+      const { lineup, ...user } = response.data.playerLogin;
+      lineup.players[user.displayOrder] = user;
+      lineup.players = lineup.players.filter(Boolean);
+      commit('setActiveUser', { client, token, user, lineup });
       // await this.dispatch('getLineup');
     },
     async getLineup({ commit, state }) {
@@ -66,14 +69,14 @@ export default new Vuex.Store({
         console.error(e);
       }
     },
-    async updateDoodle({ commit, state }:any, playerId) {
-      const player = state.lineup.players.find((p:any) => p._id === playerId);
+    async updateDoodle({ commit, state }:any) {
+      const player = state.lineup.players.find((p:any) => p._id === state.user._id);
       try {
         const response = await state.client.requester.mutate({
           mutation: UPDATE_PLAYER,
           variables: {
             record: {
-              _id: playerId,
+              _id: player._id,
               doodle: player.doodle,
             },
           },

@@ -4,6 +4,7 @@ const playerObj = `
     _id
     mainBtag
     name
+    displayOrder
     doodle
     role {
       _id
