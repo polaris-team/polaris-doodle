@@ -42,6 +42,12 @@ export default new Vuex.Store({
     updateDoodle_SUCCESS(state) {
       state.change = false;
     },
+    updateDefaultAvailability_SUCCESS(state, user) {
+      state.user = {
+        ...state.user,
+        defaultAvailability: user.defaultAvailability,
+      };
+    },
   },
   actions: {
     async loginPlayer({ commit, state }, token) {
@@ -82,6 +88,24 @@ export default new Vuex.Store({
           },
         });
         commit('updateDoodle_SUCCESS');
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async changeDefaultAvailability({ commit, state }) {
+      const curr = state.user.defaultAvailability;
+      const newValue = curr === 2 ? 0 : curr + 1;
+      try {
+        const response = await state.client.requester.mutate({
+          mutation: UPDATE_PLAYER,
+          variables: {
+            record: {
+              _id: state.user._id,
+              defaultAvailability: newValue,
+            },
+          },
+        });
+        commit('updateDefaultAvailability_SUCCESS', response.data.playerUpdateById.record);
       } catch (e) {
         console.log(e);
       }

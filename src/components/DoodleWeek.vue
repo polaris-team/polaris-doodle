@@ -1,7 +1,10 @@
 <template>
   <div class="doodle_week">
-    <div v-for="(day, i) in weekDays" v-bind:key="i">
-      {{ day.format('ddd DD') }}
+    <div class="doodle_week_head doodle_line">
+      <div class="doodle_week_row_label"></div>
+      <div class="doodle_week_cell" v-for="(day, i) in weekDays" v-bind:key="i">
+        {{ day.format('ddd DD') }}
+      </div>
     </div>
 
     <DoodleLine
@@ -62,5 +65,35 @@ export default class DoodleWeek extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.doodle_week_head {
+  display: flex;
+}
+.doodle_week {
+  margin-bottom: 40px;
+}
+</style>
+
+<style lang="scss">
+.doodle_week_row_label {
+  flex-basis: 150px;
+  justify-content: flex-start;
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+}
+.doodle_week_cell {
+  flex-basis: 50px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.doodle_line {
+  display: flex;
+  padding: 5px;
+  margin: 5px 0;
+  justify-content: space-between;
+}
 
 </style>

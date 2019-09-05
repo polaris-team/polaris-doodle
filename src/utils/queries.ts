@@ -10,6 +10,7 @@ const playerObj = `
       _id
       name
     }
+    defaultAvailability
 `;
 
 const lineupObject = `

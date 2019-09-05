@@ -1,9 +1,8 @@
 <template>
   <div class="doodle_checkbox"
-  v-if="touchable"
-  v-on:click="onClick"
-  v-bind:class="{yes: dispoState===1, no: dispoState===0, maybe: dispoState===2}"></div>
-  <div v-else class="doodle_checkbox"></div>
+    v-on="{click: touchable ? onClick : () => {}}"
+    v-bind:class="{yes: dispoState===1, no: dispoState===0, maybe: dispoState===2, touchable}"
+  />
 </template>
 
 <script lang="ts">
@@ -34,9 +33,13 @@ export default class DoodleCheckbox extends Vue {
   }
   &.no {
     background-color: 'transparent';
+    background-color: $checkboxNo;
   }
   &.maybe {
     background-color: $checkboxMaybe;
+  }
+  &.touchable {
+    cursor: pointer;
   }
 }
 
