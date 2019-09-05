@@ -64,7 +64,7 @@ export default new Vuex.Store({
           query: LOGIN_PLAYER,
         });
         const { lineup, ...user } = response.data.playerLogin;
-        lineup.players[user.displayOrder] = user;
+        lineup.players.splice(user.displayOrder - 1, 0, user);
         lineup.players = lineup.players.filter(Boolean);
         commit('setActiveUser', { client, token, user, lineup });
         // await this.dispatch('getLineup');
