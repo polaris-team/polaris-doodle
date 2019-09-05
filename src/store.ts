@@ -17,6 +17,7 @@ export default new Vuex.Store({
     user: {},
     client: null,
     token: null,
+    error: null,
   },
   mutations: {
     setActiveUser(state, { client, token, user, lineup }) {
@@ -48,20 +49,30 @@ export default new Vuex.Store({
         defaultAvailability: user.defaultAvailability,
       };
     },
+    displayError(state, e) {
+      state.user = {};
+      state.lineup = {};
+      state.error = e;
+      console.error(e);
+    },
   },
   actions: {
     async loginPlayer({ commit, state }, token) {
-      const client = new GraphQLClient(token);
-      const response = await client.requester.query({
-        query: LOGIN_PLAYER,
-      });
-      const { lineup, ...user } = response.data.playerLogin;
-      lineup.players[user.displayOrder] = user;
-      lineup.players = lineup.players.filter(Boolean);
-      commit('setActiveUser', { client, token, user, lineup });
-      // await this.dispatch('getLineup');
+      try {
+        const client = new GraphQLClient(token);
+        const response = await client.requester.query({
+          query: LOGIN_PLAYER,
+        });
+        const { lineup, ...user } = response.data.playerLogin;
+        lineup.players[user.displayOrder] = user;
+        lineup.players = lineup.players.filter(Boolean);
+        commit('setActiveUser', { client, token, user, lineup });
+        // await this.dispatch('getLineup');
+      } catch (e) {
+        commit('displayError', e);
+      }
     },
-    async getLineup({ commit, state }) {
+    async getLineup({ commit, state }:any) {
       try {
         const response = await state.client.requester.query({
           query: GET_LINEUP,
@@ -69,15 +80,14 @@ export default new Vuex.Store({
             id: '5cd7f8ee388c5fc85e0eee7e',
           },
         });
-        console.log(response);
         commit('setLineup', response.data.lineupById);
       } catch (e) {
-        console.error(e);
+        commit('displayError', e);
       }
     },
     async updateDoodle({ commit, state }:any) {
-      const player = state.lineup.players.find((p:any) => p._id === state.user._id);
       try {
+        const player = state.lineup.players.find((p:any) => p._id === state.user._id);
         const response = await state.client.requester.mutate({
           mutation: UPDATE_PLAYER,
           variables: {
@@ -89,13 +99,13 @@ export default new Vuex.Store({
         });
         commit('updateDoodle_SUCCESS');
       } catch (e) {
-        console.log(e);
+        commit('displayError', e);
       }
     },
-    async changeDefaultAvailability({ commit, state }) {
-      const curr = state.user.defaultAvailability;
-      const newValue = curr === 2 ? 0 : curr + 1;
+    async changeDefaultAvailability({ commit, state }:any) {
       try {
+        const curr = state.user.defaultAvailability;
+        const newValue = curr === 2 ? 0 : curr + 1;
         const response = await state.client.requester.mutate({
           mutation: UPDATE_PLAYER,
           variables: {
@@ -107,7 +117,7 @@ export default new Vuex.Store({
         });
         commit('updateDefaultAvailability_SUCCESS', response.data.playerUpdateById.record);
       } catch (e) {
-        console.log(e);
+        commit('displayError', e);
       }
     },
     toggleStatus({ commit }, { dayIndex, playerIndex }) {

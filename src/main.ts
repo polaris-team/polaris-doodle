@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// @ts-ignore
 import VTooltip from 'v-tooltip';
 import App from './App.vue';
 import store from './store';

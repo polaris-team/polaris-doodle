@@ -1,8 +1,11 @@
 <template>
   <div id="app">
     <div id="background-wrapper" v-bind:class="{'login-layout': !token}">
+      <main v-if="error">
+        <p>There was an error with the application. Please contact the administrator.</p>
+      </main>
 
-      <main v-if="token">
+      <main v-else-if="token">
 
         <template v-if="lineup.name">
 
@@ -76,6 +79,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapState } from 'vuex';
+import { API_URL } from './constants/constants';
 import Cookies from 'js-cookie';
 import DoodleWeek from './components/DoodleWeek.vue';
 import DoodleCheckbox from './components/DoodleCheckbox.vue';
@@ -87,12 +91,9 @@ import Button from './components/Button.vue';
     DoodleCheckbox,
     Button,
   },
-  computed: mapState(['lineup', 'change', 'user', 'token']),
+  computed: mapState(['lineup', 'change', 'user', 'token', 'error']),
   beforeCreate() {
-    // console.log(process);
     const token = Cookies.get('token');
-    console.log('token', token);
-
 
     if (token) {
       this.$store.dispatch('loginPlayer', token);
@@ -102,7 +103,7 @@ import Button from './components/Button.vue';
 export default class App extends Vue {
   login() {
     // window.location.href = `${process.env.VUE_APP_API_URL}/auth/bnet?url=${encodeURIComponent(window.location.href)}&useCookie=true`
-    window.location.href = `http://localhost:8080/auth/bnet?url=${encodeURIComponent(window.location.href)}&useCookie=true`;
+    window.location.href = `${API_URL}/auth/bnet?url=${encodeURIComponent(window.location.href)}&useCookie=true`;
   }
 
   changeDefaultAvailability() {
